@@ -1,5 +1,7 @@
+from logging import exception
 import socket
 import threading
+import re
 
 # Connection Data
 host = '127.0.0.1'
@@ -22,7 +24,8 @@ nicknames = []
 
 # Sending Messages To All Connected Clients
 def broadcast(message,client):
-    #print(nicknames)
+    print(nicknames)
+    print(client)
 
     for inTheArrayclient in clients:
         if (inTheArrayclient != client):
@@ -37,8 +40,15 @@ def handle(client):
         try:
             # Broadcasting Messages
             message = client.recv(1024)
+            decoded_message=message.decode('ascii')
+            print(decoded_message)
+            if re.search('\/bc', decoded_message):
+                print("broadcast")
+            if re.search('\/quit',decoded_message):
+                raise Exception
+                client.close()
 
-            broadcast(message,client)
+            # broadcast(message,client)
         except:
             # Removing And Closing Clients
             index = clients.index(client)
